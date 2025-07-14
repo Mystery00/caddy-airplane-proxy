@@ -1,4 +1,4 @@
-package caddy_airplane_proxy
+package airplane
 
 import "os"
 
