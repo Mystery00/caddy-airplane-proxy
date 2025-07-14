@@ -1,39 +1,23 @@
 {
-	"apps": {
-		"http": {
-			"servers": {
-				"srv0": {
-					"listen": [
-						":80"
-					],
-					"routes": [
-						{
-							"handle": [
-								{
-									"handler": "airplane_proxy"
-								}
-							]
-						}
-					]
-				}
-			}
-		},
-		"airplane_proxy": {
-			"store_dir": "/tmp/specific_dir",
-			"cron": "@every 1h",
-			"subs": {
-				"sub1": {
-					"url": "https://example.com/test.txt?q=1",
-					"route": "/sub1.txt",
-					"file_name": "sub1_file",
-					"user_agent": "clash"
-				},
-				"sub2": {
-					"url": "https://example2.com/aaa.txt",
-					"route": "/sub2",
-					"file_name": "sub2"
-				}
-			}
-		}
-	}
+    order airplane_proxy last
+
+    airplane_proxy {
+        store_dir /tmp/specific_dir
+        cron "@every 1h"
+        sub1 {
+            url "http://example.com/test1.txt?q=1"
+            route /sub1.txt
+            file_name sub1_file
+            user_agent clash
+        }
+        sub2 {
+            url http://example1.com/index.txt
+            route /sub2
+            file_name sub2
+        }
+    }
+}
+
+:80 {
+    airplane_proxy
 }
