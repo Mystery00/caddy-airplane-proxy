@@ -6,6 +6,7 @@ import (
 	"github.com/caddyserver/caddy/v2/caddyconfig/httpcaddyfile"
 	"github.com/caddyserver/caddy/v2/modules/caddyhttp"
 	"github.com/robfig/cron/v3"
+	"go.uber.org/zap"
 	"sync"
 )
 
@@ -14,6 +15,7 @@ type AirplaneProxy struct {
 	Cron     string                   `json:"cron,omitempty"`
 	Subs     map[string]*Subscription `json:"subs,omitempty"`
 	cron     *cron.Cron
+	logger   *zap.Logger
 	wg       sync.WaitGroup
 }
 

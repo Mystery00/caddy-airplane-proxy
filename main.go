@@ -6,7 +6,6 @@ import (
 	"github.com/caddyserver/caddy/v2/caddyconfig/httpcaddyfile"
 	"github.com/caddyserver/caddy/v2/modules/caddyhttp"
 	"github.com/robfig/cron/v3"
-	"log/slog"
 	"net/http"
 	"os"
 )
@@ -30,6 +29,7 @@ func (ap *AirplaneProxy) CaddyModule() caddy.ModuleInfo {
 }
 
 func (ap *AirplaneProxy) Provision(ctx caddy.Context) error {
+	ap.logger = ctx.Logger(ap)
 	if ap.Subs == nil {
 		ap.Subs = make(map[string]*Subscription)
 	}
@@ -41,16 +41,15 @@ func (ap *AirplaneProxy) Start() error {
 	if err != nil {
 		return err
 	}
-	slog.Info("starting airplane_proxy app")
+	ap.logger.Info("starting airplane_proxy app")
 	if ap.Cron != "" {
 		ap.cron = cron.New()
-		for name, sub := range ap.Subs {
+		for subName, sub := range ap.Subs {
 			s := sub
-			s.FileName = name
 			_, err := ap.cron.AddFunc(ap.Cron, func() {
 				ap.wg.Add(1)
 				defer ap.wg.Done()
-				s.fetchAndStore(ap.StoreDir)
+				ap.fetchAndStore(subName, s)
 			})
 			if err != nil {
 				return fmt.Errorf("adding cron job for sub %s: %v", s.FileName, err)
@@ -58,16 +57,16 @@ func (ap *AirplaneProxy) Start() error {
 		}
 		ap.cron.Start()
 	} else {
-		slog.Info("cron is not set, skip fetching subscriptions periodically")
+		ap.logger.Info("cron is not set, skip fetching subscriptions periodically")
 	}
-	for _, subscription := range ap.Subs {
-		subscription.checkExistOrFetch(ap.StoreDir)
+	for subName, subscription := range ap.Subs {
+		subscription.checkExistOrFetch(subName, ap)
 	}
 	return nil
 }
 
 func (ap *AirplaneProxy) Stop() error {
-	slog.Info("stopping airplane_proxy app")
+	ap.logger.Info("stopping airplane_proxy app")
 	if ap.cron != nil {
 		ap.cron.Stop()
 	}
