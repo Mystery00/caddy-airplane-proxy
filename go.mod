@@ -1,4 +1,4 @@
-module github.com/Mystery00/airplane
+module github.com/Mystery00/caddy-airplane-proxy
 
 go 1.24
 
