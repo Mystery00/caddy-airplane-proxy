@@ -1,6 +1,6 @@
 module github.com/Mystery00/caddy-airplane-proxy
 
-go 1.24
+go 1.25
 
 require (
 	github.com/caddyserver/caddy/v2 v2.10.0
