@@ -1,12 +1,13 @@
 package airplane
 
 import (
-	"go.uber.org/zap"
 	"io"
 	"net/http"
 	"os"
 	"path/filepath"
 	"time"
+
+	"go.uber.org/zap"
 )
 
 type Subscription struct {
@@ -79,7 +80,7 @@ func (ap *AirplaneProxy) fetchAndStore(subName string, s *Subscription) {
 }
 
 func (s *Subscription) bodyFilePath(storeDir string) string {
-	return filepath.Join(storeDir, s.FileName+".raw")
+	return filepath.Join(storeDir, s.FileName)
 }
 
 func (s *Subscription) headerFilePath(storeDir string) string {
