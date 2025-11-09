@@ -2,12 +2,13 @@ package airplane
 
 import (
 	"fmt"
+	"sync"
+
 	"github.com/caddyserver/caddy/v2/caddyconfig/caddyfile"
 	"github.com/caddyserver/caddy/v2/caddyconfig/httpcaddyfile"
 	"github.com/caddyserver/caddy/v2/modules/caddyhttp"
 	"github.com/robfig/cron/v3"
 	"go.uber.org/zap"
-	"sync"
 )
 
 type AirplaneProxy struct {

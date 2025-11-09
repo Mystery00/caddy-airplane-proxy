@@ -2,12 +2,13 @@ package airplane
 
 import (
 	"fmt"
+	"net/http"
+	"os"
+
 	"github.com/caddyserver/caddy/v2"
 	"github.com/caddyserver/caddy/v2/caddyconfig/httpcaddyfile"
 	"github.com/caddyserver/caddy/v2/modules/caddyhttp"
 	"github.com/robfig/cron/v3"
-	"net/http"
-	"os"
 )
 
 var (
@@ -75,6 +76,12 @@ func (ap *AirplaneProxy) Stop() error {
 }
 
 func (ap *AirplaneProxy) ServeHTTP(w http.ResponseWriter, r *http.Request, next caddyhttp.Handler) error {
+	if r.URL.Path == "/refresh" {
+		for subName, subscription := range ap.Subs {
+			ap.fetchAndStore(subName, subscription)
+		}
+		return nil
+	}
 	for _, sub := range ap.Subs {
 		if r.URL.Path == sub.Route {
 			rawPath := sub.bodyFilePath(ap.StoreDir)
